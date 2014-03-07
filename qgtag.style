@@ -1,17 +1,17 @@
 [quark]
-title=Quark
+title=Quarks
 linecolor=kRed
 
 [gluon]
-title=Gluon
+title=Gluons
 linecolor=kBlue
 
 [charm]
-title=Charm
+title=Charms
 linecolor=kGreen+3
 
 [bottom]
-title=Bottom
+title=Bottoms
 linecolor=kYellow+1
 
 [unlabelled]
