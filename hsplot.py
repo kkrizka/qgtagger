@@ -10,7 +10,6 @@ from ROOT import *
 parser=argparse.ArgumentParser(description='Convert histograms inside a ROOT file to PNG\'s.')
 parser.add_argument('input',metavar='input.root',type=str,help='Path to the ROOT file.')
 parser.add_argument('--name',metavar='name',type=str,default=None,help='Name of histograms to draw. (wildcards allowed)')
-parser.add_argument('--title',metavar='title',type=str,default=None,help='Title to put for the drawn histogram.')
 parser.add_argument('--ratio',metavar='ratio',type=str,default='',help='Plot the histograms divided by reference one at the bottom. This option should specify the title of the relative one. (THStack only)')
 parser.add_argument('--xrange',metavar='xrange',type=str,default=None,help='The x-range for the plot. Format is min:max.')
 parser.add_argument('--yrange',metavar='yrange',type=str,default=None,help='The y-range for the plot. Format is min:max.')
@@ -22,11 +21,11 @@ parser.add_argument('--logx',action='store_true',default=False,help='Set x-axis 
 parser.add_argument('--logy',action='store_true',default=False,help='Set y-axis to log scale.')
 parser.add_argument('--logz',action='store_true',default=False,help='Set z-axis to log scale.')
 parser.add_argument('--nostack',action='store_true',default=False,help='Stack these histograms from THStack')
+parser.add_argument('--subhist',action='append',help='Only draw subhistograms of a THStack with this title.')
 parser.add_argument('-K',action='append',nargs=2,help='K factor to apply to a plot, in the form of "histogram title" K-factor.')
 args = parser.parse_args()
 
 inpath=args.input
-title=args.title
 ratio=args.ratio
 xrange=args.xrange
 yrange=args.yrange
@@ -39,6 +38,7 @@ logx=args.logx
 logy=args.logy
 logz=args.logz
 nostack=args.nostack
+subhists=args.subhist
 
 ## Setup the x range, if set
 xrangemin=None
@@ -108,10 +108,6 @@ for key in keys:
     obj=fin.Get(name)
     if type(obj) not in [THStack,TH2F,TH2D,TH1D,TH1F]: continue # This object is not supported
     print 'Draw %s'%name
-
-    ## Set title
-    if title!=None:
-        obj.SetTitle(title)
 
     ## Create a list of histograms that actions should be run over
     if type(obj)==THStack:
@@ -207,8 +203,7 @@ for key in keys:
         orighists.Clear()
         for h,opt in hists:
             print h.GetTitle()
-#            if h.GetTitle()=='Charms': continue
-#            if h.GetTitle()=='Bottoms': continue
+            if subhists!=None and h.GetTitle() not in subhists: continue
             if h.Integral()==0: continue
             orighists.Add(h,opt)
         hists=obj.GetHists()
