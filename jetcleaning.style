@@ -1,0 +1,7 @@
+[clean]
+title=Jet Cleaning
+linecolor=kRed
+
+[noclean]
+title=No Jet Cleaning
+linecolor=kBlack
