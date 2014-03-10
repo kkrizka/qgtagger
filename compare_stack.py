@@ -58,12 +58,16 @@ for input in args.input:
 
 c=TCanvas()
 c.SetLogy(True)
+if o!=None: o.cd()
+    
 for name,hstack in hstacks.items():
     c.Clear()
     hstack.Draw('nostack')
+    hstack.Write()
     c.SaveAs('%s.pdf'%name)
 
 for f in fs:
     f.Close()
-    
+
+if o!=None: o.ls()    
 if o!=None: o.Close()
