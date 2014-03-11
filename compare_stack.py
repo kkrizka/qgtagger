@@ -52,8 +52,10 @@ for input in args.input:
             hstack=THStack()
             hstack.SetName(histname)
             hstacks[histname]=hstack
+        hist.Sumw2()
         if 'style' in extrainfo: s.apply_style(extrainfo['style'],hist)
-        hstacks[histname].Add(hist)
+        hstacks[histname].Add(hist,hist.GetOption())            
+        
     fs.append(f)
 
 c=TCanvas()

@@ -29,6 +29,7 @@ class Style:
             setattr(category,key,value)
 
     def apply_style(self,name,hist):
+        hist.SetTitle(name)
         if name not in self.data: return
 
         style=self.data[name]
@@ -44,3 +45,8 @@ class StyleCategory:
 
         if hasattr(self,'linecolor'):
             hist.SetLineColor(eval(self.linecolor))            
+
+        if hasattr(self,'options'):
+            hist.SetOption(self.options)
+        else:
+            hist.SetOption('HIST')

@@ -55,13 +55,13 @@ def make_hists(dir,prefix):
         stack.Draw("nostack")
         l=c.BuildLegend()
         l.Draw()
-        print l
         c.SaveAs("%s.pdf"%stack.GetName())
     
 def process_dir(dir,prefix,depth):
     keys=dir.GetListOfKeys()
     for key in keys:
         name=key.GetName()
+
         dir1=dir.Get(name)
         if type(dir1)!=TDirectoryFile: continue
 
@@ -80,6 +80,9 @@ b=args.bin
 o=TFile.Open(args.output,'RECREATE') if args.output!=None else None
 s=style.Style(args.style) if args.style!=None else None
 
-process_dir(d,[],b)
+if b==0:
+    make_hists(d,[])
+else:
+    process_dir(d,[],b)
 
 if o!=None: o.Close()

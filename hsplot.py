@@ -213,8 +213,8 @@ for key in keys:
         obj.Draw(opts)
 
         if len(obj.GetHists())>1:
-            height=len(obj.GetHists())*0.04
-            l=pad.BuildLegend(0.6,0.93,0.95,0.93-height)
+            height=len(obj.GetHists())*0.08
+            l=pad.BuildLegend(0.6,1.,1.,1.-height)
             l.Draw()
     elif type(obj) in [TH2F,TH2D]:
         obj.Draw("COLZ")
