@@ -22,6 +22,7 @@ class PlotVs:
         self.name_match=args.name
 
         self.xaxis=xaxis # What to plot against
+        self.xdistr=None
 
         self.gs={}
         self.gs_particle={}
@@ -46,15 +47,16 @@ class PlotVs:
         if args.logy: self.c.SetLogy(True)
 
     def run(self):
-        f=TFile.Open(self.input)
-
-        for key in f.GetListOfKeys():
+        self.f=TFile.Open(self.input)
+        
+        for key in self.f.GetListOfKeys():
             name=key.GetName()
 
             if self.name_match!=None:
                 if not fnmatch.fnmatch(name,self.name_match): continue
-            
-            hs=f.Get(name)
+
+            hs=self.f.Get(name)
+            if hs==0: continue
 
             self.process(name,hs)
 
@@ -79,27 +81,23 @@ class PlotVs:
 
         # Get histograms
         thehists={}
+        xmids={}
         hists=hs.GetHists()
         for hist in hists:
             if self.histograms==None or hist.GetTitle() in self.histograms:
                 thehists[hist.GetTitle()]=hist
+                xmids[hist.GetTitle()]=None
+
+        xhs=self.f.Get(binningtools.make_info(binstmp,self.xdistr)) if self.xdistr!=None else None
+        if xhs!=None:
+            xhists=.GetHists()
+            for xhist in xhists:
+                if self.histograms==None or xhist.GetTitle() in self.histograms:
+                    xmids[xhist.GetTitle()]=xhist.GetMean()
+            
 
         # Key
         key=self.key_for(varname,bins,binsorder,hs,thehists)
-
-        # Determine x range
-        if xmin==None:
-            xmid=xmax
-            xuperr=0
-            xloerr=xmax
-        elif xmax==None:
-            xmid=xmin*1.1
-            xuperr=0
-            xloerr=xmin*0.1
-        else:
-            xmid=(xmin+xmax)/2
-            xuperr=(xmax-xmin)/2
-            xloerr=(xmax-xmin)/2
 
         # Add point
         for particle in self.gs_particle[key]:
@@ -107,8 +105,19 @@ class PlotVs:
             if h==None: continue
             #if xmid in [65.0]: continue
             y,ylo,yup=self.calc(h,hs)
-            self.gs_particle[key][particle].SetPoint(self.gs_idx[key][particle],xmid,y)
-            self.gs_particle[key][particle].SetPointError(self.gs_idx[key][particle],xloerr,xuperr,ylo,yup)
+            self.gs_particle[key][particle].SetPoint(self.gs_idx[key][particle],xmids[particle],y)
+
+            # Error bars
+            if xmin==None:
+                xlo=xmids[particle]
+                xup=xmax-xmids[particle]
+            elif xmax==None:
+                xlo=xmids[particle]-xmin
+                xup=1.1*xmids[particle]
+            else:
+                xlo=xmids[particle]-xmin
+                xup=xmax-xmids[particle]
+            self.gs_particle[key][particle].SetPointError(self.gs_idx[key][particle],xlo,xup,ylo,yup)
             self.gs_idx[key][particle]+=1
             if h!=None: self.gs_particle[key][particle].SetLineColor(h.GetLineColor())
             if h!=None: self.gs_particle[key][particle].SetMarkerColor(h.GetLineColor())

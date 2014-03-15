@@ -51,8 +51,11 @@ for input in args.input:
         if histname not in hstacks:
             hstack=THStack()
             hstack.SetName(histname)
+
+            xtitle=hist.GetXaxis().GetTitle()
+            hstack.SetTitle(';%s;'%xtitle)
+
             hstacks[histname]=hstack
-        hist.Sumw2()
         if 'style' in extrainfo: s.apply_style(extrainfo['style'],hist)
         hstacks[histname].Add(hist,hist.GetOption())            
         
