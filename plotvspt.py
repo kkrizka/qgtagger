@@ -41,5 +41,6 @@ def name(variable):
     
 
 tool=plotvstools.PlotVs(sys.argv,'pt',calculate,name)
+tool.xdistr='jet_AntiKt4LCTopo_pt'
 tool.ytitle='Mean'
 tool.run()
