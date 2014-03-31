@@ -250,6 +250,7 @@ for key in keys:
                 val=hist_ratio.GetBinContent(bin)
                 if val==0: continue # don't skew values with empty bins
                 xs.append(val)
+        if len(xs)==0: continue
 
         c.cd(2)
         hstack_ratio.Draw("nostack")
