@@ -86,11 +86,16 @@ class PlotVs:
         for hist in hists:
             if self.histograms==None or hist.GetTitle() in self.histograms:
                 thehists[hist.GetTitle()]=hist
-                xmids[hist.GetTitle()]=None
+                if xmin==None:
+                    xmids[hist.GetTitle()]=xmax/2
+                elif xmax==None:
+                    xmids[hist.GetTitle()]=2.1*xmin/2
+                else:
+                    xmids[hist.GetTitle()]=(xmin+xmax)/2
 
         xhs=self.f.Get(binningtools.make_info(binstmp,self.xdistr)) if self.xdistr!=None else None
         if xhs!=None:
-            xhists=.GetHists()
+            xhists=xhs.GetHists()
             for xhist in xhists:
                 if self.histograms==None or xhist.GetTitle() in self.histograms:
                     xmids[xhist.GetTitle()]=xhist.GetMean()
