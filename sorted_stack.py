@@ -44,7 +44,7 @@ def make_hists(dir,prefix):
 
                 stacks[thename]=stack
 
-            if s!=None: s.apply_style(name,hist)
+            s.apply_style(hist,{},name)
             stacks[thename].Add(hist)
 
     print stacks.keys()
@@ -78,7 +78,7 @@ f=TFile.Open(args.input);
 d=f if args.dir==None else f.Get(args.dir)
 b=args.bin
 o=TFile.Open(args.output,'RECREATE') if args.output!=None else None
-s=style.Style(args.style) if args.style!=None else None
+s=style.Style(args.style)
 
 if b==0:
     make_hists(d,[])

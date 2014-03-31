@@ -3,7 +3,7 @@ class Style:
     def __init__(self,infile):
         self.data={}
 
-        self.parse(infile)
+        if infile!=None: self.parse(infile)
 
     def parse(self,infile):
         fh=open(infile)
@@ -17,7 +17,7 @@ class Style:
             if line[0]=='[':
                 name=line[1:-1]
                 print name
-                category=StyleCategory(name)
+                category={}
                 self.data[name]=category
                 continue
 
@@ -26,27 +26,29 @@ class Style:
             key=parts[0]
             value='='.join(parts[1:])
 
-            setattr(category,key,value)
+            category[key]=value
 
-    def apply_style(self,name,hist):
-        hist.SetTitle(name)
-        if name not in self.data: return
+    def apply_style(self,hist,extra={},name=None):
+        data={}
+        if 'style' in extra:
+            hist.SetTitle(extra['style'])
+            data=dict(data.items()+self.data[extra['style']].items())
+        elif name!=None:
+            hist.SetTitle(name)
+            data=dict(data.items()+self.data[name].items())
 
-        style=self.data[name]
-        style.apply(hist)
+        data=dict(data.items()+extra.items())
 
-class StyleCategory:
-    def __init__(self,name):
-        self.name=name
+        if 'title' in data:
+            hist.SetTitle(data['title'])
 
-    def apply(self,hist):
-        if hasattr(self,'title'):
-            hist.SetTitle(self.title)
+        if 'linecolor' in data:
+            hist.SetLineColor(eval(data['linecolor']))            
 
-        if hasattr(self,'linecolor'):
-            hist.SetLineColor(eval(self.linecolor))            
-
-        if hasattr(self,'options'):
-            hist.SetOption(self.options)
+        if 'fillcolor' in data:
+            hist.SetFillColor(eval(data['fillcolor']))
+            
+        if 'options' in data:
+            hist.SetOption(data['options'])
         else:
             hist.SetOption('HIST')
