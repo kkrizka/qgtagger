@@ -13,6 +13,7 @@ import ptetabinningtools
 parser=argparse.ArgumentParser(description='Combine a few plotvspt outputs.')
 parser.add_argument('input',metavar='graph.root',nargs='+',type=str,help='Path to the ROOT file.')
 parser.add_argument('--logy',action='store_true',default=False,help='Set y-axis to log scale.')
+parser.add_argument('--ratio',action='store_true',default=False,help='Add ratio plot.')
 parser.add_argument('--ratiorange',metavar='ratiorange',type=str,default=None,help='The y-range for the ratio plot. Format is min:max (THStack only).')
 parser.add_argument('--ratiotitle',metavar='ratiotitle',type=str,default='',help='The title for the yaxis of the ratio plot.')
 parser.add_argument('--yrange',metavar='yrange',type=str,default=None,help='The y-range (variable range) in format min:max.')
@@ -24,6 +25,7 @@ yrange=None
 if args.yrange!=None:
     parts=args.yrange.split(':')
     yrange=(float(parts[0]),float(parts[1]))
+ratio=args.ratio
 ratiotitle=args.ratiotitle
 ratiorange=None
 if args.ratiorange!=None:
@@ -38,8 +40,10 @@ ls={}
 ytitles={}
 yranges={}
 
-c=TCanvas('c1','c1',600,600)
-#c=TCanvas()
+if ratio:
+    c=TCanvas('c1','c1',600,600)
+else:
+    c=TCanvas()
 for input in inputs:
     print input
 
@@ -63,7 +67,7 @@ for input in inputs:
     f=TFile.Open(input)
     for key in f.GetListOfKeys():
         name=key.GetName()
-#        if name!='etato0.8_jet_nTrk_pv0_1GeV': continue
+        #if name!='etato0.8_jet_nTrk_pv0_1GeV': continue
         g=f.Get(name)
 
         # Extract information
@@ -92,7 +96,7 @@ for input in inputs:
 
             mg_ratios=TMultiGraph()
 
-            l=TLegend(0.6,1.,1.,1.-0.04*len(inputs)*2)
+            l=TLegend(0.6,1.,1.,1.-0.08*len(inputs)*2)
 
             mgs[key]=mg
             mgs_ratios[key]=mg_ratios
@@ -143,16 +147,18 @@ for input in inputs:
 
 # Prepare canvas
 c.Clear()
-c.Divide(1,2)
 
-pad=c.cd(1)
-pad.SetPad(0.01,0.15,0.99,0.99)
-pad_ratio=c.cd(2)
-pad_ratio.SetBorderSize(0)
-pad_ratio.SetTopMargin(0)
-pad_ratio.SetBottomMargin(0.3)
-pad_ratio.SetPad(0.01,0.01,0.99,0.235)
-pad_ratio.SetGridy()
+if ratio:
+    c.Divide(1,2)
+
+    pad=c.cd(1)
+    pad.SetPad(0.01,0.15,0.99,0.99)
+    pad_ratio=c.cd(2)
+    pad_ratio.SetBorderSize(0)
+    pad_ratio.SetTopMargin(0)
+    pad_ratio.SetBottomMargin(0.3)
+    pad_ratio.SetPad(0.01,0.01,0.99,0.235)
+    pad_ratio.SetGridy()
 
 #pad_ratio.SetPad(0.01,0.01,0.99,0.29)
 
@@ -169,9 +175,9 @@ for name in mgs:
     ytitle=ytitles[name]
     yrange=yranges[name]
     
-    pad=c.cd(1)
+    if ratio: pad=c.cd(1)
     if args.logy: c.SetLogy(True)
-    pad.Clear()
+    if ratio: pad.Clear()
 
     mg.Draw("APE")
     mg.GetXaxis().SetTitle("Jet P_{T} (GeV)")
@@ -181,38 +187,39 @@ for name in mgs:
     mg.GetYaxis().SetRangeUser(yrange[0],yrange[1])
     l.Draw()
 
-    pad=c.cd(2)
-    pad.Clear()
-    pad.SetGridy()
-    mg_ratios.Draw("APE")
-
-    if mg_ratios.GetYaxis()!=None:
-        if ratiorange!=None: mg_ratios.GetYaxis().SetRangeUser(ratiorange[0],ratiorange[1])
-        if ratiorange!=None: mg_ratios.GetYaxis().SetNdivisions(100+int((ratiorange[1]-ratiorange[0])/0.1),False)
-
-        if ratiotitle=='': mg_ratios.GetYaxis().SetTitle('1/%s'%ref_title)
-        else: mg_ratios.GetYaxis().SetTitle(ratiotitle)
-        #mg_ratios.GetYaxis().SetTitle('MC/Template')
-        mg_ratios.GetYaxis().SetTitleSize(0.12)
-        mg_ratios.GetYaxis().SetTitleOffset(0.35)
-
-
-        mg_ratios.GetXaxis().SetTitle("Jet P_{T} (GeV)")
-        mg_ratios.GetXaxis().SetTitleSize(0.15)
-        mg_ratios.GetXaxis().SetTitleOffset(1.0)
-
-        mg_ratios.GetXaxis().SetLabelFont(63);
-        mg_ratios.GetXaxis().SetLabelSize(14);
-        
-        mg_ratios.GetXaxis().SetLabelFont(63);
-        mg_ratios.GetXaxis().SetLabelSize(14);
-        mg_ratios.GetYaxis().SetLabelFont(63);
-        mg_ratios.GetYaxis().SetLabelSize(14);
-
-        # Draw the "zero" line
-        zeroline=TLine(mg_ratios.GetXaxis().GetXmin(),1,mg_ratios.GetXaxis().GetXmax(),1)
-        zeroline.Draw()
-
+    if ratio:
+        pad=c.cd(2)
+        pad.Clear()
+        pad.SetGridy()
+        mg_ratios.Draw("APE")
+    
+        if mg_ratios.GetYaxis()!=None:
+            if ratiorange!=None: mg_ratios.GetYaxis().SetRangeUser(ratiorange[0],ratiorange[1])
+            if ratiorange!=None: mg_ratios.GetYaxis().SetNdivisions(100+int((ratiorange[1]-ratiorange[0])/0.1),False)
+    
+            if ratiotitle=='': mg_ratios.GetYaxis().SetTitle('1/%s'%ref_title)
+            else: mg_ratios.GetYaxis().SetTitle(ratiotitle)
+            #mg_ratios.GetYaxis().SetTitle('MC/Template')
+            mg_ratios.GetYaxis().SetTitleSize(0.12)
+            mg_ratios.GetYaxis().SetTitleOffset(0.35)
+    
+    
+            mg_ratios.GetXaxis().SetTitle("Jet P_{T} (GeV)")
+            mg_ratios.GetXaxis().SetTitleSize(0.15)
+            mg_ratios.GetXaxis().SetTitleOffset(1.0)
+    
+            mg_ratios.GetXaxis().SetLabelFont(63);
+            mg_ratios.GetXaxis().SetLabelSize(14);
+            
+            mg_ratios.GetXaxis().SetLabelFont(63);
+            mg_ratios.GetXaxis().SetLabelSize(14);
+            mg_ratios.GetYaxis().SetLabelFont(63);
+            mg_ratios.GetYaxis().SetLabelSize(14);
+    
+            # Draw the "zero" line
+            zeroline=TLine(mg_ratios.GetXaxis().GetXmin(),1,mg_ratios.GetXaxis().GetXmax(),1)
+            zeroline.Draw()
+    
     
 #    print len(mg_ratios.GetListOfGraphs())
 
