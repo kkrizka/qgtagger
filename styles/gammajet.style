@@ -1,0 +1,12 @@
+[data]
+title=Data
+linecolor=kBlack
+options=E
+
+[pythia8-gammajet]
+title=Pythia 8 - #gamma + jet
+linecolor=kGreen
+
+[herwigpp-gammajet]
+title=Herwig++ - #gamma + jet
+linecolor=kYellow

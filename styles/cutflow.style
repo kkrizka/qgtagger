@@ -1,0 +1,6 @@
+[total]
+linecolor=kBlack
+
+[pass]
+linecolor=kRed
+fillcolor=kRed
