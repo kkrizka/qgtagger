@@ -18,8 +18,6 @@ def loadABCD(path):
         line=line.strip()
         parts=line.split()
 
-        if parts[0]!='etato0.8': continue
-        if parts[1]!='pt170to210': continue
         parts[2:]=[float(part) for part in parts[2:]]
         etastr,ptstr,NA,NB,NC,ND=parts
 
