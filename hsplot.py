@@ -176,8 +176,8 @@ for key in keys:
         if minval==None or val<minval:
             minval=val
 
-#    if minval!=None:
-#        obj.SetMinimum(minval)
+    if minval!=None:
+        obj.SetMinimum(minval)
 #
 #    if rangemin!=None:
 #        obj.SetMinimum(rangemin)
