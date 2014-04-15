@@ -6,29 +6,11 @@ import argparse
 
 import ptetabinningtools
 
+import ABCDtools
+
 parser=argparse.ArgumentParser(description='Plot multiple purity curves.')
 parser.add_argument('input',metavar='input.txt:title:color:mcinput.txt',type=str,nargs='+',help='Textfiles with the counts in ABCD regions.')
 args = parser.parse_args()
-
-def loadABCD(path):
-    if path=='': return None
-    datas={}
-    f=open(path)
-    for line in f:
-        line=line.strip()
-        parts=line.split()
-
-        parts[2:]=[float(part) for part in parts[2:]]
-        etastr,ptstr,NA,NB,NC,ND=parts
-
-        if NB==0 or NC==0: continue
-
-        if etastr not in datas: datas[etastr]={}
-
-        datas[etastr][ptstr]=(NA,NB,NC,ND)
-
-    return datas
-
 
 datas=[]
 for input in args.input:
@@ -37,22 +19,7 @@ for input in args.input:
     title=parts[1] if len(parts)>=2 else input
     color=parts[2] if len(parts)>=3 else 'kBlack'
     mcinput=parts[3] if len(parts)>=4 else ''
-    datas.append((loadABCD(input),title,eval(color),loadABCD(mcinput)))
-
-def calc_mccorr(NA,NB,NC,ND,NAsig,NBsig,NCsig,NDsig):
-    cA=NAsig/NCsig
-    cB=NBsig/NCsig
-    cC=NCsig/NCsig
-    cD=NDsig/NCsig
-    
-    a=cB+cA*cD
-    b=cD*NA+cA*ND-NC*cB-NB
-    c=NC*NB-NA*ND
-    
-    d=sqrt(b**2-4*a*c)
-
-    P=(-b-sqrt(b**2-4*a*c))/(2*a*NC) if a>0 else 1-(ND/NC)*(NA/NB)
-    return P
+    datas.append((ABCDtools.loadABCD(input),title,eval(color),ABCDtools.loadABCD(mcinput)))
 
 def fill_graph(g,etadatas,mcetadatas=None):
     idx=0
@@ -77,6 +44,7 @@ def fill_graph(g,etadatas,mcetadatas=None):
             P=1-(ND/NC)*(NA/NB)
             print NA,'/',NB,'*',ND,'/',NC,P
             Perr=(ND/NC)*(NA/NB)*sqrt(1/NA+1/NB+1/NC+1/ND)
+
             if mcetadatas!=None and ptstr in mcetadatas:
                 NAsig,NBsig,NCsig,NDsig=mcetadatas[ptstr]
 
@@ -88,7 +56,7 @@ def fill_graph(g,etadatas,mcetadatas=None):
                 xx=0
                 N=10000
                 for trail in range(N):
-                    P=calc_mccorr(NA,NB,NC,ND,NAsig,NBsig,NCsig,NDsig)
+                    P=ABCDtools.calc_mccorr(NA,NB,NC,ND,NAsig,NBsig,NCsig,NDsig)
                     x+=P
                     xx+=P*P
                 P=x/N
