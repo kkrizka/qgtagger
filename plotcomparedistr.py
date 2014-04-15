@@ -9,6 +9,7 @@ parser=argparse.ArgumentParser(description='Compare different distributions')
 parser.add_argument('input',metavar='output.root',nargs='+',help='Distributions to compare')
 parser.add_argument('--name',metavar='name',type=str,default=None,help='Name of histograms to draw. (wildcards allowed)')
 parser.add_argument('--particle',metavar='particle',action='append',help='Name of particles to draw.')
+parser.add_argument('--nonormalize',action='store_true',default=False,help='Do not normalize histograms to area of 1.')
 parser.add_argument('--xrange',metavar='xrange',type=str,default=None,help='The x-range (variable range) in format min:max.')
 args=parser.parse_args()
 
@@ -16,6 +17,7 @@ inputs=args.input
 name_match=args.name
 xrange=None
 particles=args.particle if args.particle!=None else ['Quarks','Gluons']
+nonormalize=args.nonormalize
 
 if args.xrange!=None:
     parts=args.xrange.split(':')
@@ -79,7 +81,7 @@ for input in inputs:
             scale=hist.Integral()
             if scale==0: continue
             if hist.GetTitle() not in particles: continue
-            hist.Scale(1./scale)
+            if not nonormalize: hist.Scale(1./scale)
 
             hist.SetMarkerStyle(inmarker)
             hist.SetMarkerColor(hist.GetLineColor())
