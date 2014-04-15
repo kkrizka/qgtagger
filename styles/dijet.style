@@ -12,5 +12,5 @@ title=Herwig++ - Dijet
 linecolor=kRed
 
 [alpgen-multijet]
-title=Alpgen - Multijet
+title=Alpgen Pythia - Multijet
 linecolor=kGreen+4

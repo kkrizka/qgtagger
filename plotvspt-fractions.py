@@ -31,7 +31,7 @@ def ytitle(variable):
 
 tool=plotvstools.PlotVs(sys.argv,'pt',calculate,name)
 tool.variables.append('jet_pt')
-tool.xdistr='jet_AntiKt4LCTopo_pt'
+tool.xdistr='jet_pt'
 tool.ytitle=ytitle
 tool.yrange=(0.,1.)
 tool.name=name
