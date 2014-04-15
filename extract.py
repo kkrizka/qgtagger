@@ -75,8 +75,22 @@ for key in jetjet_data_fh.GetListOfKeys(): #
     if gammajet_mc_charm==None: print 'Missing gammajet_mc_charm'; continue
     if gammajet_mc_bottom==None: print 'Missing gammajet_mc_bottom'; continue
 
+    # Skip on any empty histograms
+    if jetjet_data.Integral()==0: print 'Empty jetjet_data'; continue
+    if gammajet_data.Integral()==0: print 'Empty gammajet_data'; continue
+
+    if jetjet_mc_quark.Integral()==0: print 'Empty jetjet_mc_quark'; continue
+    if jetjet_mc_gluon.Integral()==0: print 'Empty jetjet_mc_gluon'; continue
+    if jetjet_mc_charm.Integral()==0: print 'Empty jetjet_mc_charm'; continue
+    if jetjet_mc_bottom.Integral()==0: print 'Empty jetjet_mc_bottom'; continue
+
+    if gammajet_mc_quark.Integral()==0: print 'Empty gammajet_mc_quark'; continue
+    if gammajet_mc_gluon.Integral()==0: print 'Empty gammajet_mc_gluon'; continue
+    if gammajet_mc_charm.Integral()==0: print 'Empty gammajet_mc_charm'; continue
+    if gammajet_mc_bottom.Integral()==0: print 'Empty gammajet_mc_bottom'; continue
+
     # Rebin
-    rebin=1 # 4
+    rebin=4 # 4
     jetjet_data.Rebin(rebin)
     jetjet_mc_quark.Rebin(rebin)
     jetjet_mc_gluon.Rebin(rebin)

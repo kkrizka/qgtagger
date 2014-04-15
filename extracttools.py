@@ -69,12 +69,14 @@ def extract(jetjet_data,gammajet_data,
     gammajet_mc_bottom_integral=gammajet_mc_bottom.Integral()
 
     jetjet_total=list_integral([jetjet_mc_quark,jetjet_mc_gluon,jetjet_mc_charm,jetjet_mc_bottom])
+    if jetjet_total==0: return None
     f_q_jetjet=jetjet_mc_quark_integral/jetjet_total
     f_g_jetjet=jetjet_mc_gluon_integral/jetjet_total
     f_c_jetjet=jetjet_mc_charm_integral/jetjet_total
     f_b_jetjet=jetjet_mc_bottom_integral/jetjet_total
 
     gammajet_total=list_integral([gammajet_mc_quark,gammajet_mc_gluon,gammajet_mc_charm,gammajet_mc_bottom])
+    if gammajet_total==0: return None
     f_q_gammajet=gammajet_mc_quark_integral/gammajet_total
     f_g_gammajet=gammajet_mc_gluon_integral/gammajet_total
     f_c_gammajet=gammajet_mc_charm_integral/gammajet_total
