@@ -17,6 +17,7 @@ parser.add_argument('--ratio',action='store_true',default=False,help='Add ratio 
 parser.add_argument('--ratiorange',metavar='ratiorange',type=str,default=None,help='The y-range for the ratio plot. Format is min:max (THStack only).')
 parser.add_argument('--ratiotitle',metavar='ratiotitle',type=str,default='',help='The title for the yaxis of the ratio plot.')
 parser.add_argument('--yrange',metavar='yrange',type=str,default=None,help='The y-range (variable range) in format min:max.')
+parser.add_argument('--particle',metavar='particle',action='append',help='Particle to include.')
 args = parser.parse_args()
 
 
@@ -31,7 +32,8 @@ ratiorange=None
 if args.ratiorange!=None:
     parts=args.ratiorange.split(':')
     ratiorange=(float(parts[0]),float(parts[1]))
-
+particles=args.particle
+    
 mgs={}
 mgs_ratios={}
 gs_ratiorefs={}
@@ -111,7 +113,7 @@ for input in inputs:
 
         # Add the graphs from the current g to the mg
         for ag in g.GetListOfGraphs():
-#            if ag.GetTitle() not in ['Quarks','Gluons']: continue
+            if particles!=None and ag.GetTitle() not in particles: continue
             ag.SetMarkerStyle(inmarker)
             ag.SetMarkerColor(ag.GetMarkerColor())
             mgs[key].Add(ag)
